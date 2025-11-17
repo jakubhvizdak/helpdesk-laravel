@@ -39,6 +39,9 @@
                     <span>{{ loading ? 'Prihlasujem...' : 'Prihlásiť sa' }}</span>
                 </button>
             </form>
+            <div class="text-xs text-gray-400 mt-2">
+                Verzia: {{ version }}
+            </div>
         </div>
     </div>
 </template>
@@ -53,8 +56,17 @@ export default {
             email: '',
             password: '',
             error: '',
-            loading: false
+            loading: false,
+            version: ''
         };
+    },
+    async mounted() {
+        try {
+            const res = await axios.get('/version');
+            this.version = res.data.version;
+        } catch (err) {
+            this.version = 'dev';
+        }
     },
     methods: {
         async login() {

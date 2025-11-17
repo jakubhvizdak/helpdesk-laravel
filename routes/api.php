@@ -13,6 +13,9 @@ use App\Http\Controllers\API\TaskStatusController;
 use App\Http\Controllers\API\TaskAttachmentController;
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::get('/version', function () {
+    return response()->json(['version' => env('APP_VERSION', 'dev')]);
+});
 Route::get('/tasks/export-ics', [TaskController::class, 'exportIcs']);
 
 Route::middleware('auth:sanctum')->group(function () {
