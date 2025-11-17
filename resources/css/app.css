@@ -1,0 +1,176 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95) translateY(-20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(100%) scale(0.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes slideOut {
+    from { opacity: 1; transform: translateX(0) scale(1); }
+    to { opacity: 0; transform: translateX(100%) scale(0.95); }
+}
+
+.fade-enter-active { animation: slideIn 0.3s ease-out; }
+.fade-leave-active { animation: slideOut 0.3s ease-in; }
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loader {
+    border-top-color: #3b82f6;
+    animation: spin 1s linear infinite;
+    border-radius: 50%;
+    border: 8px solid #e5e7eb;
+    width: 3rem;
+    height: 3rem;
+    margin: auto;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+    background-size: 200% 100%;
+    border-radius: 0.375rem;
+    display: inline-block;
+    animation: shimmer 1.5s infinite;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 8px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.overflow-x-auto::-webkit-scrollbar { height: 8px; }
+.overflow-x-auto::-webkit-scrollbar-track { background: #f7fafc; }
+.overflow-x-auto::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
+.overflow-x-auto::-webkit-scrollbar-thumb:hover { background: #a0aec0; }
+
+@media (max-width: 640px) {
+    .overflow-x-auto {
+        scrollbar-width: thin;
+        scrollbar-color: #cbd5e0 #f7fafc;
+    }
+}
+
+
+#toast-wrapper {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+    pointer-events: none;
+}
+
+@media (max-width: 640px) {
+    #toast-wrapper {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        align-items: stretch;
+    }
+}
+
+input { outline: none; }
+input::placeholder { color: #a0aec0; }
+.break-words { word-break: break-word; }
+.fc-event { font-size: 0.85rem; }
+
+.responsive-table {
+    border-collapse: collapse;
+}
+
+.responsive-table thead { background-color: #f9fafb; }
+
+.responsive-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.responsive-table tbody tr {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.15s;
+}
+
+.responsive-table tbody tr:hover { background-color: #f9fafb; }
+
+.responsive-table td {
+    padding: 1rem 1.5rem;
+    font-size: 0.875rem;
+    color: #111827;
+}
+
+@media screen and (max-width: 768px) {
+    .responsive-table thead { display: none; }
+
+    .responsive-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    .responsive-table tbody tr:hover {
+        background-color: white;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+
+    .responsive-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f3f4f6;
+        text-align: right;
+    }
+
+    .responsive-table td:last-child { border-bottom: none; }
+
+    .responsive-table td:before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+        margin-right: 1rem;
+        text-align: left;
+    }
+
+    .responsive-table td > * { flex: 1; text-align: right; }
+}
+
+@media (max-width: 640px) {
+    div {
+        min-width: calc(100vw - 2rem);
+        max-width: calc(100vw - 2rem);
+    }
+}
