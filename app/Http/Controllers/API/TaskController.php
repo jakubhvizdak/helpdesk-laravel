@@ -10,6 +10,7 @@ use App\Models\TaskStatus;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\ConfigHelper;
 use App\Services\IcsExport;
+use App\Models\TaskEditLog;
 
 class TaskController extends Controller
 {
@@ -222,7 +223,38 @@ class TaskController extends Controller
             'assigned_to' => 'sometimes|nullable|exists:users,id',
         ]);
 
+        $user = $request->user();
+
+        $oldValues = $task->only(['assigned_to', 'due_date']);
+
         $task->update($validated);
+
+        foreach (['assigned_to', 'due_date'] as $key) {
+            if (array_key_exists($key, $validated)) {
+                $oldValue = $oldValues[$key] ?? null;
+                $newValue = $validated[$key];
+
+                if ($oldValue != $newValue) {
+                    $type = $key === 'assigned_to'
+                        ? TaskEditLog::TYPE_ASSIGNED_USER
+                        : TaskEditLog::TYPE_DUE_DATE;
+
+                    if ($key === 'due_date') {
+                        $oldValue = $oldValue ? \Carbon\Carbon::parse($oldValue)->format('Y-m-d') : null;
+                        $newValue = $newValue ? \Carbon\Carbon::parse($newValue)->format('Y-m-d') : null;
+                    }
+
+                    TaskEditLog::create([
+                        'task_id' => $task->id,
+                        'user_id' => $user->id,
+                        'type' => $type,
+                        'old_value' => (string) $oldValue,
+                        'new_value' => (string) $newValue,
+                        'notified' => false,
+                    ]);
+                }
+            }
+        }
 
         return response()->json([
             'message' => 'Úloha bola úspešne aktualizovaná.',

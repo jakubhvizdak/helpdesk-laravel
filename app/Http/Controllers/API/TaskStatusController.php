@@ -7,6 +7,7 @@ use App\Models\Task;
 use App\Models\TaskStatus;
 use App\TaskStateMachine;
 use Illuminate\Http\Request;
+use App\Models\TaskEditLog;
 
 class TaskStatusController extends Controller
 {
@@ -48,6 +49,15 @@ class TaskStatusController extends Controller
         }
 
         $task->save();
+
+        TaskEditLog::create([
+            'task_id' => $task->id,
+            'user_id' => $request->user()->id,
+            'type' => TaskEditLog::TYPE_STATUS_CHANGE,
+            'old_value' => (string) $oldStatusId,
+            'new_value' => (string) $newStatusId,
+            'notified' => false,
+        ]);
 
         $task->load('status');
 

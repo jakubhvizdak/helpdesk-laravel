@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\TaskComment;
 use App\Models\TaskAttachment;
+use App\Models\TaskEditLog;
 
 class TaskCommentController extends Controller
 {
@@ -31,10 +32,21 @@ class TaskCommentController extends Controller
             'text' => 'required|string|max:2000',
         ]);
 
+        $user = $request->user();
+
         $comment = TaskComment::create([
             'task_id' => $taskId,
             'user_id' => $request->user()->id,
             'text' => $request->text,
+        ]);
+
+        TaskEditLog::create([
+            'task_id' => $taskId,
+            'user_id' => $user->id,
+            'type' => TaskEditLog::TYPE_COMMENT_ADDED,
+            'old_value' => null,
+            'new_value' => $request->text,
+            'notified' => false,
         ]);
 
         $comment->load('user', 'attachments');
