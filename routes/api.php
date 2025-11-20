@@ -19,7 +19,7 @@ Route::get('/version', function () {
 });
 Route::get('/tasks/export-ics', [TaskController::class, 'exportIcs']);
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('jwt')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::put('/users/{user}', [UserController::class, 'update']);
