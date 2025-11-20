@@ -115,6 +115,15 @@
                                     <span class="text-sm font-medium">Správa projektov</span>
                                 </router-link>
 
+                                <router-link
+                                    v-if="user.role === 'admin'"
+                                    to="/configuration"
+                                    class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                    <Settings class="w-5 h-5 text-gray-400" />
+                                    <span class="text-sm font-medium">Konfigurácia</span>
+                                </router-link>
+
                                 <div class="border-t border-gray-100">
                                     <button
                                         @click.prevent="logout"
@@ -146,7 +155,8 @@ import {
     ChevronDown,
     User,
     Users,
-    LogOut
+    LogOut,
+    Settings
 } from 'lucide-vue-next'
 
 const dropdownOpen = ref(false)

@@ -11,6 +11,7 @@ import TaskDetail from '../views/TaskDetail.vue';
 import ProjectDetail from "../views/ProjectDetail.vue";
 import UserManagement from "../views/UserManagement.vue";
 import ProjectManagement from "../views/ProjectManagement.vue";
+import Configuration from "../views/Configuration.vue";
 
 
 const routes = [
@@ -25,7 +26,8 @@ const routes = [
     { path: '/task/:id', component: TaskDetail, meta: { requiresAuth: true } },
     { path: '/project/:id', component: ProjectDetail, meta: { requiresAuth: true } },
     { path: '/users', name: 'UserManagement', component: UserManagement, meta: { requiresAdmin: true }},
-    { path: '/project-management', name: 'ProjectManagement', component: ProjectManagement, meta: { requiresAdmin: true }}
+    { path: '/project-management', name: 'ProjectManagement', component: ProjectManagement, meta: { requiresAdmin: true }},
+    { path: '/configuration', name: 'Configuration', component: Configuration, meta: { requiresAdmin: true }}
 ];
 
 const router = createRouter({

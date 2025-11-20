@@ -12,6 +12,7 @@ use App\Http\Controllers\API\TaskActivityController;
 use App\Http\Controllers\API\TaskStatusController;
 use App\Http\Controllers\API\TaskAttachmentController;
 use App\Http\Controllers\API\TaskEditLogController;
+use App\Http\Controllers\API\TaskStatusTransitionController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/version', function () {
@@ -51,6 +52,10 @@ Route::middleware('jwt')->group(function () {
     Route::get('/tasks/{task}/allowed-transitions', [TaskStatusController::class, 'allowedTransitions']);
     Route::put('/tasks/{task}', [TaskController::class, 'update']);
     Route::post('/tasks/{task}/comments/{comment}/attachments', [TaskAttachmentController::class, 'store']);
+
+    Route::get('/status-transitions', [TaskStatusTransitionController::class, 'index']);
+    Route::post('/status-transitions', [TaskStatusTransitionController::class, 'store']);
+    Route::delete('/status-transitions/{id}', [TaskStatusTransitionController::class, 'destroy']);
 
     Route::get('/tasks/{taskId}/comments', [TaskCommentController::class, 'index']);
     Route::post('/tasks/{taskId}/comments', [TaskCommentController::class, 'store']);
