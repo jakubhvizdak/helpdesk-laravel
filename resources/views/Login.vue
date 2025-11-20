@@ -3,14 +3,13 @@
         <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-8 sm:p-10">
             <h2 class="text-3xl font-bold mb-6 text-center text-gray-900">Prihlásenie</h2>
 
-            <form @submit.prevent="login" class="space-y-5">
+            <form @submit.prevent="login" class="space-y-5" novalidate>
                 <div>
                     <label class="block mb-1 text-gray-700 font-medium">Email</label>
                     <input
                         v-model="email"
                         type="email"
                         placeholder="mail@mail.com"
-                        required
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                     />
                 </div>
@@ -21,7 +20,6 @@
                         v-model="password"
                         type="password"
                         placeholder="********"
-                        required
                         class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                     />
                 </div>
@@ -40,7 +38,7 @@
                 </button>
             </form>
             <div class="text-xs text-gray-400 mt-2">
-                Verzia: {{ version }}
+                {{ version }}
             </div>
         </div>
     </div>
@@ -86,6 +84,18 @@ export default {
                 this.error = err.response?.data?.message || 'Chyba prihlásenia';
             } finally {
                 this.loading = false;
+            }
+            if (!this.email || !this.password) {
+                this.error = 'Email a heslo sú povinné';
+                this.loading = false;
+                return;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(this.email)) {
+                this.error = 'Neplatný formát emailu';
+                this.loading = false;
+                return;
             }
         }
     }
