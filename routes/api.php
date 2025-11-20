@@ -11,6 +11,7 @@ use App\Http\Controllers\API\TaskTimeController;
 use App\Http\Controllers\API\TaskActivityController;
 use App\Http\Controllers\API\TaskStatusController;
 use App\Http\Controllers\API\TaskAttachmentController;
+use App\Http\Controllers\API\TaskEditLogController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/version', function () {
@@ -42,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tasks/completed', [TaskController::class, 'completed']);
     Route::get('/tasks/{id}', [TaskController::class, 'show']);
     Route::post('/tasks', [TaskController::class, 'store']);
+    Route::get('/tasks/{task}/edit-log', [TaskEditLogController::class, 'index']);
     Route::get('/my-tasks', [TaskController::class, 'myActiveTasks']);
     Route::get('/my-tasks/completed', [TaskController::class, 'myCompletedTasks']);
     Route::patch('/tasks/{task}/status', [TaskStatusController::class, 'updateStatus']);

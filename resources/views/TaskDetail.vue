@@ -25,8 +25,8 @@
                                 v-if="task.status"
                                 :class="[task.status.color_bg, task.status.color_text, 'px-3 py-1 rounded-lg text-sm font-semibold whitespace-nowrap h-fit']"
                             >
-                                {{ task.status.label }}
-                            </span>
+                            {{ task.status.label }}
+                        </span>
                         </div>
                         <p v-if="task.description" class="text-gray-600 mt-3">{{ task.description }}</p>
                         <p v-else class="text-gray-400 mt-3 italic">Bez popisu</p>
@@ -79,18 +79,36 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-md p-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-xl font-bold text-gray-900">Diskusia</h2>
-                        <button @click="showEditModal = true" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                            Upraviť/Reagovať
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex gap-2">
+                        <button
+                            @click="activeTab = 'discussion'"
+                            :class="activeTab === 'discussion' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                            class="px-4 py-2 rounded-lg font-medium transition-colors"
+                        >
+                            Diskusia
+                        </button>
+                        <button
+                            @click="activeTab = 'history'"
+                            :class="activeTab === 'history' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                            class="px-4 py-2 rounded-lg font-medium transition-colors"
+                        >
+                            História
                         </button>
                     </div>
+                    <button
+                        v-if="activeTab === 'discussion'"
+                        @click="showEditModal = true"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                        Upraviť/Reagovať
+                    </button>
+                </div>
 
+                <div v-if="activeTab === 'discussion'" class="bg-white rounded-xl shadow-md p-6">
                     <div v-if="loadingComments" class="flex justify-center py-8">
                         <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
                     </div>
-
                     <div v-else-if="comments.length" class="space-y-4">
                         <div v-for="comment in comments" :key="comment.id" :class="['flex gap-3', getUserSide(comment.user.id) === 'right' ? 'flex-row-reverse' : '']">
                             <div class="flex-shrink-0">
@@ -129,7 +147,64 @@
                         <p>Zatiaľ žiadne komentáre</p>
                     </div>
                 </div>
-            </div>
+
+                <div v-if="activeTab === 'history'" class="bg-white rounded-xl shadow-md p-6">
+                    <div v-if="loadingHistory" class="flex flex-col items-center justify-center py-12">
+                        <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+                        <p class="mt-4 text-sm text-gray-500">Načítavam históriu...</p>
+                    </div>
+
+                    <div v-else-if="filteredLogs.length" class="space-y-3">
+                        <div
+                            v-for="log in filteredLogs"
+                            :key="log.id"
+                            class="relative pl-10 pb-4 group"
+                        >
+                            <div class="absolute left-2 top-0 bottom-0 w-0.5 bg-gray-200 group-last:hidden"></div>
+
+                            <div class="absolute left-0 top-1.5 w-5 h-5 rounded-full bg-blue-500 border-4 border-white shadow-sm"></div>
+
+                            <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors border border-gray-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span class="text-xs text-gray-500">
+                        {{ formatDate(log.created_at) }}
+                    </span>
+                                </div>
+
+                                <p class="text-sm text-gray-700 leading-relaxed">
+                                    Používateľ <strong class="font-semibold text-gray-900">{{ log.user.name }} {{ log.user.surname }}</strong>
+
+                                    <span v-if="log.type === 'status_change'">
+                        zmenil stav z "{{ log.old_value }}" na "{{ log.new_value }}"
+                    </span>
+                                    <span v-else-if="log.type === 'assigned_user'">
+                        zmenil priradeného používateľa z "{{ log.old_value }}" na "{{ log.new_value }}"
+                    </span>
+                                    <span v-else-if="log.type === 'due_date'">
+                        zmenil termín z "{{ log.old_value }}" na "{{ log.new_value }}"
+                    </span>
+                                    <span v-else>
+                        zmenil {{ log.type }} z "{{ log.old_value }}" na "{{ log.new_value }}"
+                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-else class="text-center py-16">
+                        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                            <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-base font-semibold text-gray-700 mb-1">Zatiaľ žiadne zmeny</h3>
+                        <p class="text-sm text-gray-500">História zmien sa zobrazí po prvej úprave</p>
+                    </div>
+                </div>
+                </div>
 
             <div v-else class="text-center py-32 text-gray-500">
                 <p class="text-xl font-semibold">Úloha sa nenašla</p>
@@ -163,10 +238,13 @@ export default {
             task: null,
             comments: [],
             times: [],
+            editLogs: [],
             loading: true,
             showEditModal: false,
             loadingComments: true,
             loadingTimes: true,
+            loadingHistory: true,
+            activeTab: 'discussion',
             userSideMap: {},
             usedSides: { left: 0, right: 0 },
         };
@@ -175,12 +253,16 @@ export default {
         workedHours() {
             if (!Array.isArray(this.times)) return 0;
             return this.times.map(t => parseFloat(t.hours) || 0).reduce((sum, val) => sum + val, 0).toFixed(2);
+        },
+        filteredLogs() {
+            return this.editLogs.filter(log => log && log.user && log.type !== 'comment_added');
         }
     },
     async mounted() {
         await this.fetchTask();
         await this.fetchComments();
         await this.fetchTimes();
+        await this.fetchEditLogs();
     },
     methods: {
         async fetchTask() {
@@ -215,7 +297,18 @@ export default {
                 this.loadingTimes = false;
             }
         },
-        handleUpdate(data) {
+        async fetchEditLogs() {
+            this.loadingHistory = true;
+            try {
+                const res = await this.$axios.get(`/tasks/${this.$route.params.id}/edit-log`);
+                this.editLogs = res.data;
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.loadingHistory = false;
+            }
+        },
+        async handleUpdate(data) {
             if (data.comment) this.comments.push(data.comment);
             if (data.time) this.times.push(data.time);
             if (data.updatedFields) {
@@ -226,12 +319,14 @@ export default {
 
                 if (f.assigned_to !== undefined) {
                     try {
-                        this.fetchTask();
+                        await this.fetchTask();
                     } catch (err) {
                         console.error("Nepodarilo sa obnoviť task po zmene priradenia:", err);
                     }
                 }
             }
+
+            await this.fetchEditLogs();
         },
         getUserSide(userId) {
             if (!this.userSideMap[userId]) {
