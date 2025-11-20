@@ -113,7 +113,12 @@ const fetchDashboard = async () => {
 
             let avgTime = "N/A";
 
-            const finished = completedList.filter(t => t.end_date);
+            const finished = completedList.filter(t => {
+                if (!t.end_date) return false;
+
+                const end = new Date(t.end_date);
+                return !isNaN(end.getTime());
+            });
 
             if (finished.length > 0) {
                 const totalMs = finished.reduce((sum, t) => {

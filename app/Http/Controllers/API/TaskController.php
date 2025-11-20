@@ -205,6 +205,8 @@ class TaskController extends Controller
                     'id' => $task->status?->id,
                     'name' => $task->status?->name ?? 'Neznámy',
                     'label' => $task->status?->label ?? ucfirst($task->status?->name ?? 'Neznámy'),
+                    'color_bg' => $task->status?->color_bg ?? 'bg-gray-100',
+                    'color_text' => $task->status?->color_text ?? 'text-gray-700',
                 ],
                 'created_at' => $task->created_at,
                 'due_date' => $task->due_date?->format('Y-m-d') ?? null,
