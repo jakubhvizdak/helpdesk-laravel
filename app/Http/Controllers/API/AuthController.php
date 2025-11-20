@@ -44,4 +44,18 @@ class AuthController extends Controller
     {
         return response()->json(auth()->user());
     }
+
+    public function refresh()
+    {
+        try {
+            $token = auth('api')->refresh();
+            return response()->json([
+                'token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => auth('api')->factory()->getTTL() * 60,
+            ]);
+        } catch (\Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+            return response()->json(['message' => 'Token neplatný'], 401);
+        }
+    }
 }

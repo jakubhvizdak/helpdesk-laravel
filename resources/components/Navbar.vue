@@ -195,7 +195,11 @@ const linkClass = (path) => {
 const logout = async () => {
     try {
         await axios.post('/logout')
-
+    } catch (err) {
+        if (err.response?.status !== 401) {
+            console.error('Logout error:', err)
+        }
+    } finally {
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         user.value = {}
@@ -203,8 +207,6 @@ const logout = async () => {
         dropdownOpen.value = false
 
         router.replace({ path: '/login' })
-    } catch (err) {
-        console.error('Logout error:', err)
     }
 }
 </script>
