@@ -137,7 +137,7 @@ class TaskController extends Controller
         $user = $request->user();
 
         $tasks = Task::with(['project', 'assigned', 'status'])
-            ->whereNotIn('status_id', [3, 4])
+            ->whereNotIn('status_id', [3, 4, 8])
             ->where(function($q) use ($user) {
                 $q->where('assigned_to', $user->id)
                     ->orWhereNull('assigned_to');

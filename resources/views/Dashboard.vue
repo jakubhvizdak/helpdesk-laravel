@@ -135,20 +135,21 @@ const fetchDashboard = async () => {
                 { title: "Priemerný čas dokončenia", value: avgTime, icon: "Timer", color: "purple" }
             ];
     } else {
-            const [tasks, projects, timeSummary] = await Promise.all([
+            const [tasks, projects, timeSummary, completedTasks] = await Promise.all([
                 safeRequest(() => axios.get("/my-tasks")),
                 safeRequest(() => axios.get("/my-projects")),
-                safeRequest(() => axios.get("/time-tracking/summary"))
+                safeRequest(() => axios.get("/time-tracking/summary")),
+                safeRequest(() => axios.get("/tasks/completed"))
             ]);
 
             userTasks.value = Array.isArray(tasks) ? tasks : [];
+            const completedList = Array.isArray(completedTasks) ? completedTasks : [];
             const totalHours = timeSummary?.total_hours || 0;
             timeData.value = timeSummary || {};
-            const completed = userTasks.value.filter(t => t.status?.name === "dokoncena").length;
 
             stats.value = [
-                { title: "Aktívne úlohy", value: userTasks.value.length, icon: "ClipboardList", color: "blue" },
-                { title: "Dokončené úlohy", value: completed, icon: "CheckCircle", color: "green" },
+                { title: "Otvorené úlohy", value: userTasks.value.length, icon: "ClipboardList", color: "blue" },
+                { title: "Dokončené úlohy", value: completedList.length, icon: "CheckCircle", color: "green" },
                 { title: "Odpracované hodiny", value: totalHours + "h", icon: "Clock", color: "purple" },
                 { title: "Projekty", value: Array.isArray(projects) ? projects.length : 0, icon: "Folder", color: "orange" }
             ];

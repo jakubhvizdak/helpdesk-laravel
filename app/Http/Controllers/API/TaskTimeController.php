@@ -95,11 +95,13 @@ class TaskTimeController extends Controller
         $today = Carbon::today();
         $startOfWeek = Carbon::now()->startOfWeek();
         $startOfMonth = Carbon::now()->startOfMonth();
+        $totalHours = $times->sum('hours');
 
         $hours = [
             'today' => $times->where('worked_at', '>=', $today)->sum('hours'),
             'week' => $times->where('worked_at', '>=', $startOfWeek)->sum('hours'),
             'month' => $times->where('worked_at', '>=', $startOfMonth)->sum('hours'),
+            'total_hours' => $totalHours,
         ];
 
         return response()->json($hours);
