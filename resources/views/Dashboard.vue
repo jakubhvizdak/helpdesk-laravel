@@ -39,7 +39,7 @@
 
                 <template v-if="role === 'customer'">
                     <div class="space-y-6">
-                        <SectionCard title="Moje požiadavky" icon="MessageSquare" :count="requests.length">
+                        <SectionCard title="Vytvorené požiadavky" icon="MessageSquare" :count="requests.length">
                             <div class="space-y-3">
                                 <RequestItem v-for="r in requests" :key="r.id" :request="r" />
                             </div>
@@ -134,7 +134,7 @@ const fetchDashboard = async () => {
             }
 
             stats.value = [
-                { title: "Moje požiadavky", value: requests.value.length, icon: "MessageSquare", color: "blue" },
+                { title: "Vytvorené požiadavky", value: requests.value.length, icon: "MessageSquare", color: "blue" },
                 { title: "V riešení", value: inProgressList.length, icon: "Clock", color: "orange" },
                 { title: "Dokončené", value: completedList.length, icon: "CheckCircle", color: "green" },
                 { title: "Priemerný čas dokončenia", value: avgTime, icon: "Timer", color: "purple" }
