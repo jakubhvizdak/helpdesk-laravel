@@ -64,6 +64,7 @@
                             class="absolute h-8 rounded-lg shadow-md flex items-center justify-center transition-all hover:shadow-lg cursor-pointer group"
                             :class="getTaskColor(index)"
                             :style="getTaskStyle(task)"
+                            @click="openTaskDetail(task)"
                         >
                             <span class="text-white text-xs font-medium px-2 truncate group-hover:scale-105 transition-transform">
                                 {{ task.text }}
@@ -125,6 +126,9 @@ export default {
             } else {
                 this.cellWidth = 60;
             }
+        },
+        openTaskDetail(task) {
+            this.$router.push(`/task/${task.id}`)
         },
         zoomIn() {
             this.cellWidth = Math.min(this.cellWidth + 10, 100);
