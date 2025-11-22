@@ -171,6 +171,7 @@ export default {
         return {
             times: [],
             loading: true,
+            user: null,
             filters: {
                 user: '',
                 task: '',
@@ -187,6 +188,10 @@ export default {
                 const task = t.task?.title?.toLowerCase() || '';
                 const activity = t.activity?.label?.toLowerCase() || '';
                 const createdAt = new Date(t.created_at);
+
+                if (this.user?.role === 'customer' && t.task?.private) {
+                    return false;
+                }
 
                 return (
                     (!this.filters.user || name.includes(this.filters.user.toLowerCase())) &&
@@ -229,7 +234,14 @@ export default {
             };
         },
     },
-    mounted() {
+    async mounted() {
+        try {
+            const me = await this.$axios.get('/me');
+            this.user = me.data;
+        } catch (err) {
+            console.error('Chyba pri načítaní info o používateľovi', err);
+        }
+
         this.fetchData();
     },
 };

@@ -51,6 +51,7 @@ import api from '../js/api.js';
 import { formatDate } from '../js/composables/date';
 import { downloadBlob } from '../js/composables/file';
 import Gantt from '../components/Gantt.vue';
+import axios from 'axios'
 
 export default {
     name: 'CalendarView',
@@ -72,6 +73,16 @@ export default {
         };
     },
     async mounted() {
+        try {
+            const me = await axios.get('http://localhost:8000/api/me', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+                withCredentials: true
+            });
+            this.user = me.data;
+        } catch (err) {
+            console.error('Chyba pri načítaní info o používateľovi', err);
+        }
+
         await this.loadTasks();
     },
     methods: {
@@ -80,27 +91,35 @@ export default {
                 const res = await api.get('/api/tasks');
                 const taskData = res.data?.data ?? res.data ?? [];
 
-                this.tasks = taskData.map(task => ({
+                const filteredTasks = taskData.filter(task => {
+                    return !(this.user?.role === 'customer' && task.private === 1);
+                });
+
+
+                this.tasks = filteredTasks.map(task => ({
                     id: String(task.id),
                     text: task.title,
                     start: formatDate(task.created_at),
                     end: formatDate(task.end_date || task.due_date || task.created_at),
                 }));
 
-                const events = [];
-                this.tasks.forEach(task => {
-                    if (task.start)
-                        events.push({
+                const events = this.tasks.flatMap(task => {
+                    const evs = [];
+                    if (task.start) {
+                        evs.push({
                             title: `🆕 ${task.text}`,
                             start: task.start,
                             color: '#3b82f6',
                         });
-                    if (task.end && task.end !== task.start)
-                        events.push({
+                    }
+                    if (task.end && task.end !== task.start) {
+                        evs.push({
                             title: `✅ Deadline: ${task.text}`,
                             start: task.end,
                             color: '#f97316',
                         });
+                    }
+                    return evs;
                 });
                 this.calendarOptions.events = events;
             } catch (e) {

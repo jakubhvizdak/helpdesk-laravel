@@ -208,6 +208,7 @@
         <AddTaskModal
             :visible="showAddTaskModal"
             :project-id="null"
+            :currentUser="user"
             @close="showAddTaskModal = false"
             @created="onTaskCreated"
             @notify="showNotification"
@@ -233,6 +234,7 @@ export default {
             showAddTaskModal: false,
             tasks: { data: [], current_page: 1, last_page: 1 },
             users: [],
+            user: null,
             filters: {
                 title: '',
                 project: '',
@@ -246,6 +248,11 @@ export default {
     computed: {
         filteredTasks() {
             let filtered = [...this.tasks.data];
+
+            if (this.user && this.user.role === 'customer') {
+                filtered = filtered.filter(task => task.private === 0);
+            }
+
             if (this.filters.title) {
                 const searchTerm = this.filters.title.toLowerCase();
                 filtered = filtered.filter(task => task.title.toLowerCase().includes(searchTerm));
@@ -266,6 +273,9 @@ export default {
         'filters.perPage': function() { this.fetchTasks(1); },
     },
     async mounted() {
+        const me = await this.$axios.get('/me');
+        this.user = me.data;
+
         await this.fetchUsers();
         await this.fetchTasks();
     },

@@ -19,7 +19,18 @@
                     <div class="p-6 border-b border-gray-200">
                         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                             <div class="flex-1">
-                                <h1 class="text-2xl font-bold text-gray-900">{{ task.title }}</h1>
+                                <div class="flex items-center gap-3">
+                                    <h1 class="text-2xl font-bold text-gray-900">{{ task.title }}</h1>
+                                    <span
+                                        v-if="task.private"
+                                        class="inline-flex items-center justify-center w-8 h-8 bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg flex-shrink-0 shadow-sm border border-amber-200"
+                                        title="Súkromná úloha"
+                                    >
+                    <svg class="w-5 h-5 text-amber-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                    </svg>
+                </span>
+                                </div>
                             </div>
                             <span
                                 v-if="task.status"
@@ -282,6 +293,10 @@ export default {
                 const res = await this.$axios.get(`/tasks/${this.$route.params.id}`);
                 this.task = res.data;
             } catch (err) {
+                if (err.response?.status === 403) {
+                    this.$router.push('/dashboard');
+                    return;
+                }
                 console.error(err);
             } finally {
                 this.loading = false;

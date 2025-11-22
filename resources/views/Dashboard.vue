@@ -105,9 +105,11 @@ const fetchDashboard = async () => {
                 safeRequest(() => axios.get("/tasks/completed"))
             ]);
 
-            requests.value = Array.isArray(allTasks) ? allTasks : [];
-            const inProgressList = Array.isArray(inProgress) ? inProgress : [];
-            const completedList = Array.isArray(completed) ? completed : [];
+            const filterPrivate = (tasks) => Array.isArray(tasks) ? tasks.filter(t => t.private !== 1) : [];
+
+            requests.value = filterPrivate(allTasks);
+            const inProgressList = filterPrivate(inProgress);
+            const completedList = filterPrivate(completed);
 
             responses.value = [];
 
@@ -147,7 +149,7 @@ const fetchDashboard = async () => {
                 safeRequest(() => axios.get("/tasks/completed"))
             ]);
 
-            userTasks.value = Array.isArray(tasks) ? tasks : [];
+            userTasks.value = Array.isArray(tasks) ? tasks.filter(t => !(role.value === 'customer' && t.private === 1)) : [];
             const completedList = Array.isArray(completedTasks) ? completedTasks : [];
             const totalHours = timeSummary?.total_hours || 0;
             timeData.value = timeSummary || {};

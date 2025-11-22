@@ -29,7 +29,7 @@ class TaskController extends Controller
 
         $query = Task::with(['project', 'assigned', 'status'])
             ->whereIn('project_id', $userProjectIds)
-            ->select('id', 'title', 'status_id', 'project_id', 'assigned_to', 'created_at', 'due_date');
+            ->select('id', 'title', 'status_id', 'project_id', 'assigned_to', 'private', 'created_at', 'due_date');
 
         if ($request->filled('status')) {
             $query->whereHas('status', function ($q) use ($request) {
@@ -59,6 +59,13 @@ class TaskController extends Controller
             return response()->json(['message' => 'Task not found'], 404);
         }
 
+        $user = auth()->user();
+        $isCustomer = $user->role === 'customer';
+
+        if ($task->private && $isCustomer) {
+            return response()->json(['message' => 'Access denied'], 403);
+        }
+
         $workedHours = TaskTime::where('task_id', $task->id)->sum('hours');
 
         $data = [
@@ -85,6 +92,7 @@ class TaskController extends Controller
             'created_at' => $task->created_at,
             'due_date' => $task->due_date ?? null,
             'worked_hours' => (float) $workedHours,
+            'private' => (bool) $task->private ?? null,
         ];
 
         return response()->json($data);
@@ -102,6 +110,7 @@ class TaskController extends Controller
             'assigned_to' => $allowUnassigned
                 ? 'nullable|exists:users,id'
                 : 'required|exists:users,id',
+            'private' => 'nullable|boolean',
         ], [
             'assigned_to.required' => 'Nová úloha musí byť priradená používateľovi.',
         ]);
@@ -114,6 +123,7 @@ class TaskController extends Controller
             'due_date' => $validated['due_date'] ?? null,
             'project_id' => $validated['project_id'],
             'assigned_to' => $validated['assigned_to'] ?? null,
+            'private' => $validated['private'] ?? 0,
             'created_by' => auth()->id(),
         ]);
 

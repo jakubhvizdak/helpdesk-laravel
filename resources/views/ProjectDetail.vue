@@ -73,8 +73,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr
-                                v-for="task in project.tasks"
+                            <tr v-for="task in visibleTasks"
                                 :key="task.id"
                                 class="border-t hover:bg-blue-50 transition"
                             >
@@ -118,6 +117,7 @@
                 <AddTaskModal
                     :visible="showTaskModal"
                     :project-id="project.id"
+                    :currentUser="user"
                     @close="showTaskModal = false"
                     @created="project.tasks.unshift($event)"
                     @notify="showNotification"
@@ -152,6 +152,15 @@ export default {
         };
     },
     computed: {
+        visibleTasks() {
+            if (!this.project?.tasks) return [];
+
+            if (this.user?.role === 'customer') {
+                return this.project.tasks.filter(t => !t.private);
+            }
+
+            return this.project.tasks;
+        },
         usedHours() {
             if (!this.project?.service_hours) return 0;
             return (
@@ -161,6 +170,9 @@ export default {
         },
     },
     async mounted() {
+        const userRes = await this.$axios.get('/me');
+        this.user = userRes.data;
+
         const id = this.$route.params.id;
         try {
             const res = await this.$axios.get(`/projects/${id}`);

@@ -85,6 +85,32 @@
                                 placeholder="Detailný popis úlohy a požiadaviek..."
                             ></textarea>
                         </div>
+                        <div v-if="currentUser && !isCustomer" class="flex items-center gap-3 mt-3">
+                            <div class="relative flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="privateTask"
+                                    v-model="form.private"
+                                    class="peer h-5 w-5 cursor-pointer appearance-none rounded border-2 border-gray-300 bg-white transition-all checked:border-blue-600 checked:bg-blue-600 hover:border-blue-400 focus:outline-none focus:border-blue-500"
+                                />
+                                <svg
+                                    class="pointer-events-none absolute left-0 top-0 h-5 w-5 text-white opacity-0 transition-opacity peer-checked:opacity-100"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="3"
+                                        d="M5 13l4 4L19 7"
+                                    />
+                                </svg>
+                            </div>
+                            <label for="privateTask" class="text-sm font-medium text-gray-700 cursor-pointer select-none">
+                                Súkromná úloha
+                            </label>
+                        </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
@@ -178,6 +204,12 @@ export default {
     props: {
         visible: Boolean,
         projectId: { type: Number, default: null },
+        currentUser: { type: Object, default: () => null }
+    },
+    computed: {
+        isCustomer() {
+            return this.currentUser?.role === 'customer';
+        }
     },
     data() {
         return {
@@ -189,6 +221,7 @@ export default {
                 due_date: "",
                 assigned_to: null,
                 project_id: null,
+                private: 0,
             },
             projects: [],
             projectUsers: [],
@@ -265,6 +298,7 @@ export default {
                     due_date: this.form.due_date || null,
                     assigned_to: this.form.assigned_to || null,
                     status: 'priradena',
+                    private: this.form.private ? 1 : 0,
                 });
 
                 this.$emit("created", res.data);

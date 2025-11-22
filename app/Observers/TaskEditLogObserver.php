@@ -13,7 +13,13 @@ class TaskEditLogObserver
         $task = $log->task()->with('project.users')->first();
         $editor = $log->user;
 
-        $usersToNotify = $task->project->users->filter(fn($u) => $u->id !== $editor->id);
+        $usersToNotify = $task->project->users->filter(function($u) use ($editor, $task) {
+            if ($u->id === $editor->id) return false;
+
+            if ($task->private && $u->role === 'customer') return false;
+
+            return true;
+        });
 
         Notification::send($usersToNotify, new TaskEdited($task, $log, $editor));
 

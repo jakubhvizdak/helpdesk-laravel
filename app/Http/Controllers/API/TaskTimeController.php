@@ -20,7 +20,7 @@ class TaskTimeController extends Controller
 
         $times = TaskTime::with([
             'user:id,name,surname',
-            'task:id,title,project_id',
+            'task:id,title,project_id,private',
             'task.project.users',
             'activity:id,name,label',
         ])

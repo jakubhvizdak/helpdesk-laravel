@@ -17,6 +17,7 @@ class Task extends Model
         'end_date',
         'project_id',
         'assigned_to',
+        'private',
         'created_by'
     ];
 
