@@ -13,6 +13,7 @@ use App\Http\Controllers\API\TaskStatusController;
 use App\Http\Controllers\API\TaskAttachmentController;
 use App\Http\Controllers\API\TaskEditLogController;
 use App\Http\Controllers\API\TaskStatusTransitionController;
+use App\Http\Controllers\API\NotificationController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/version', function () {
@@ -59,6 +60,12 @@ Route::middleware('jwt')->group(function () {
 
     Route::get('/tasks/{taskId}/comments', [TaskCommentController::class, 'index']);
     Route::post('/tasks/{taskId}/comments', [TaskCommentController::class, 'store']);
+
+    Route::get('/notifications/show-in-app-notification', [NotificationController::class, 'getShowInAppNotification']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread', [NotificationController::class, 'unread']);
+    Route::patch('/notifications/{id}', [NotificationController::class, 'markRead']);
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead']);
 
     Route::get('/tasks/{task}/times', [TaskTimeController::class, 'index']);
     Route::post('/tasks/{task}/times', [TaskTimeController::class, 'store']);

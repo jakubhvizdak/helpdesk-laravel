@@ -47,10 +47,18 @@
                     <div class="relative ml-2">
                         <button
                             @click.stop="toggleDropdown"
-                            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 focus:outline-none"
+                            class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 transition-all duration-200 focus:outline-none relative"
                         >
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold shadow-sm">
-                                {{ userInitials }}
+                            <div class="relative">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold shadow-sm">
+                                    {{ userInitials }}
+                                </div>
+                                <span
+                                    v-if="showInAppNotification && unreadCount > 0"
+                                    class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md border-2 border-white"
+                                >
+                                    {{ unreadCount > 9 ? '9+' : unreadCount }}
+                                </span>
                             </div>
                             <div class="hidden lg:block text-left">
                                 <p class="text-sm font-medium text-gray-900">{{ userName }}</p>
@@ -77,8 +85,16 @@
                             >
                                 <div class="px-4 py-3 bg-gradient-to-br from-gray-50 to-white border-b border-gray-100">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
-                                            {{ userInitials }}
+                                        <div class="relative">
+                                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                                {{ userInitials }}
+                                            </div>
+                                            <span
+                                                v-if="showInAppNotification && unreadCount > 0"
+                                                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md border-2 border-white"
+                                            >
+                                                {{ unreadCount > 9 ? '9+' : unreadCount }}
+                                            </span>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-semibold text-gray-900 truncate">{{ userName }}</p>
@@ -96,6 +112,23 @@
                                         <span class="text-sm font-medium">Profil</span>
                                     </router-link>
 
+                                    <button
+                                        v-if="showInAppNotification"
+                                        @click.stop="toggleNotifications"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors w-full text-left relative"
+                                    >
+                                        <Bell class="w-5 h-5 text-gray-400" />
+                                        <span class="text-sm font-medium">Notifikácie</span>
+                                        <span
+                                            v-if="unreadCount > 0"
+                                            class="ml-auto bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
+                                        >
+                                            {{ unreadCount > 9 ? '9+' : unreadCount }}
+                                        </span>
+                                    </button>
+
+                                    <div class="border-t border-gray-200 mx-4"></div>
+
                                     <router-link
                                         v-if="user.role === 'admin'"
                                         to="/users"
@@ -104,25 +137,25 @@
                                         <Users class="w-5 h-5 text-gray-400" />
                                         <span class="text-sm font-medium">Správa používateľov</span>
                                     </router-link>
+
+                                    <router-link
+                                        v-if="user.role === 'admin'"
+                                        to="/project-management"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <Folder class="w-5 h-5 text-gray-400" />
+                                        <span class="text-sm font-medium">Správa projektov</span>
+                                    </router-link>
+
+                                    <router-link
+                                        v-if="user.role === 'admin'"
+                                        to="/configuration"
+                                        class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
+                                    >
+                                        <Settings class="w-5 h-5 text-gray-400" />
+                                        <span class="text-sm font-medium">Konfigurácia</span>
+                                    </router-link>
                                 </div>
-
-                                <router-link
-                                    v-if="user.role === 'admin'"
-                                    to="/project-management"
-                                    class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
-                                >
-                                    <Folder class="w-5 h-5 text-gray-400" />
-                                    <span class="text-sm font-medium">Správa projektov</span>
-                                </router-link>
-
-                                <router-link
-                                    v-if="user.role === 'admin'"
-                                    to="/configuration"
-                                    class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
-                                >
-                                    <Settings class="w-5 h-5 text-gray-400" />
-                                    <span class="text-sm font-medium">Konfigurácia</span>
-                                </router-link>
 
                                 <div class="border-t border-gray-100">
                                     <button
@@ -135,6 +168,13 @@
                                 </div>
                             </div>
                         </transition>
+
+                        <NotificationsDropdown
+                            :visible="notificationsOpen"
+                            @close="notificationsOpen = false"
+                            @update-count="updateUnreadCount"
+                            ref="notificationsDropdown"
+                        />
                     </div>
                 </div>
             </div>
@@ -147,6 +187,7 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { getInitials } from '../js/composables/string';
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import NotificationsDropdown from './notification/NotificationList.vue'
 import {
     Folder,
     CheckSquare,
@@ -156,19 +197,21 @@ import {
     User,
     Users,
     LogOut,
-    Settings
+    Settings,
+    Bell
 } from 'lucide-vue-next'
 
 const dropdownOpen = ref(false)
+const notificationsOpen = ref(false)
+const unreadCount = ref(0)
 const route = useRoute()
 const router = useRouter()
+const notificationsDropdown = ref(null)
 const appName = import.meta.env.VITE_APP_NAME || 'Helpdesk'
 const user = ref(JSON.parse(localStorage.getItem('user')) || {})
 
 const userInitials = computed(() => getInitials(user.value.name, user.value.surname))
-
 const userName = computed(() => user.value.name || 'Užívateľ')
-
 const userRole = computed(() => {
     if (user.value.role === 'admin') return 'Administrátor'
     if (user.value.role === 'customer') return 'Zákazník'
@@ -177,21 +220,62 @@ const userRole = computed(() => {
 
 watch(route, () => {
     dropdownOpen.value = false
+    notificationsOpen.value = false
 })
 
+const showInAppNotification = ref(false)
+
 onMounted(() => {
+    const init = async () => {
+        try {
+            const res = await axios.get('/notifications/show-in-app-notification')
+            showInAppNotification.value = Number(res.data.value) === 1
+        } catch (err) {
+            console.error('Error fetching config:', err)
+        }
+    }
+
+    init();
+
     document.addEventListener('click', closeDropdown)
+    fetchUnreadCount()
+
+    const interval = setInterval(fetchUnreadCount, 30000)
+    onBeforeUnmount(() => {
+        clearInterval(interval)
+    })
 })
+
 onBeforeUnmount(() => {
     document.removeEventListener('click', closeDropdown)
 })
 
 const toggleDropdown = () => {
     dropdownOpen.value = !dropdownOpen.value
+    notificationsOpen.value = false
+}
+
+const toggleNotifications = () => {
+    notificationsOpen.value = !notificationsOpen.value
+    dropdownOpen.value = false
 }
 
 const closeDropdown = () => {
     dropdownOpen.value = false
+    notificationsOpen.value = false
+}
+
+const fetchUnreadCount = async () => {
+    try {
+        const res = await axios.get('/notifications/unread')
+        unreadCount.value = res.data.length
+    } catch (err) {
+        console.error('Error fetching unread count:', err)
+    }
+}
+
+const updateUnreadCount = (count) => {
+    unreadCount.value = count
 }
 
 const linkClass = (path) => {

@@ -264,6 +264,18 @@ export default {
         await this.fetchTimes();
         await this.fetchEditLogs();
     },
+    watch: {
+        '$route.params.id': {
+            immediate: false,
+            handler() {
+                this.loading = true;
+                this.fetchTask();
+                this.fetchComments();
+                this.fetchTimes();
+                this.fetchEditLogs();
+            }
+        }
+    },
     methods: {
         async fetchTask() {
             try {
