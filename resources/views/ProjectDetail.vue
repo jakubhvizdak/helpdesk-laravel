@@ -15,6 +15,18 @@
                             <p class="text-gray-700">{{ project.description || '' }}</p>
                         </div>
 
+                        <div class="flex items-center gap-3">
+                            <button
+                                @click="$router.push(`/project/${project.id}/documentation`)"
+                                class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-100 transition-colors flex items-center gap-2 shadow-sm"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M12 20h9M12 4h9m-9 8h9M4 8h.01M4 16h.01M4 4h.01M4 20h.01"/>
+                                </svg>
+                                <span>Dokumentácia</span>
+                            </button>
+
                         <button
                             @click="showTaskModal = true"
                             class="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-sm"
@@ -24,6 +36,7 @@
                             </svg>
                             <span>Pridať úlohu</span>
                         </button>
+                    </div>
                     </div>
 
                     <div v-if="project.service_hours" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-4">

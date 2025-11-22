@@ -12,6 +12,7 @@ import ProjectDetail from "../views/ProjectDetail.vue";
 import UserManagement from "../views/UserManagement.vue";
 import ProjectManagement from "../views/ProjectManagement.vue";
 import Configuration from "../views/Configuration.vue";
+import ProjectDocumentation from "../views/ProjectDocumentation.vue";
 
 
 const routes = [
@@ -27,7 +28,8 @@ const routes = [
     { path: '/project/:id', component: ProjectDetail, meta: { requiresAuth: true } },
     { path: '/users', name: 'UserManagement', component: UserManagement, meta: { requiresAdmin: true }},
     { path: '/project-management', name: 'ProjectManagement', component: ProjectManagement, meta: { requiresAdmin: true }},
-    { path: '/configuration', name: 'Configuration', component: Configuration, meta: { requiresAdmin: true }}
+    { path: '/configuration', name: 'Configuration', component: Configuration, meta: { requiresAdmin: true }},
+    { path: '/project/:id/documentation', component: ProjectDocumentation, meta: { requiresAuth: true }}
 ];
 
 const router = createRouter({

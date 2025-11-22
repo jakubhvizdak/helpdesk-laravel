@@ -42,4 +42,9 @@ class Project extends Model
         });
     }
 
+    public function documentationSections()
+    {
+        return $this->hasMany(ProjectDocumentationSection::class);
+    }
+
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\API\TaskAttachmentController;
 use App\Http\Controllers\API\TaskEditLogController;
 use App\Http\Controllers\API\TaskStatusTransitionController;
 use App\Http\Controllers\API\NotificationController;
+use App\Http\Controllers\API\ProjectDocumentationController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/version', function () {
@@ -38,6 +39,10 @@ Route::middleware('jwt')->group(function () {
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
     Route::get('/projects/{project}/users', [ProjectController::class, 'projectUsers']);
     Route::put('/projects/{project}/users', [ProjectController::class, 'updateProjectUsers']);
+    Route::get('/project/{project}/documentation', [ProjectDocumentationController::class, 'index']);
+    Route::post('/project/{project}/documentation', [ProjectDocumentationController::class, 'store']);
+    Route::put('/project/{project}/documentation/{section}', [ProjectDocumentationController::class, 'update']);
+    Route::delete('/project/{project}/documentation/{section}', [ProjectDocumentationController::class, 'destroy']);
 
     Route::get('/tasks', [TaskController::class, 'index']);
     Route::get('/tasks/my-requests', [TaskController::class, 'myRequests']);

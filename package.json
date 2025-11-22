@@ -27,6 +27,7 @@
         "@infectoone/vue-ganttastic": "^2.3.2",
         "@jyoketsu/vue-gantt": "^0.0.4",
         "lucide-vue-next": "^0.552.0",
+        "marked": "^17.0.1",
         "npm": "^11.6.2",
         "vue-ganttastic": "^0.9.34",
         "vue-router": "^4.5.1"
