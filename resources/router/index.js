@@ -5,7 +5,8 @@ import Dashboard from '../views/Dashboard.vue';
 import Tasks from '../views/Tasks.vue';
 import TimeTracking from '../views/TimeTracking.vue';
 import Calendar from '../views/Calendar.vue';
-import Profile from '../views/Profile.vue';
+import MyProfile from '../views/MyProfile.vue';
+import UserProfile from '../views/UserProfile.vue';
 import Projects from  '../views/Projects.vue';
 import TaskDetail from '../views/TaskDetail.vue';
 import ProjectDetail from "../views/ProjectDetail.vue";
@@ -22,7 +23,8 @@ const routes = [
     { path: '/tasks', component: Tasks, meta: { requiresAuth: true } },
     { path: '/time-tracking', component: TimeTracking, meta: { requiresAuth: true } },
     { path: '/calendar', component: Calendar, meta: { requiresAuth: true } },
-    { path: '/profile', component: Profile, meta: { requiresAuth: true } },
+    { path: '/profile', component: MyProfile, meta: { requiresAuth: true } },
+    { path: '/profile/:id', component: UserProfile, meta: { requiresAuth: true } },
     { path: '/projects', component: Projects, meta: { requiresAuth: true } },
     { path: '/task/:id', component: TaskDetail, meta: { requiresAuth: true } },
     { path: '/project/:id', component: ProjectDetail, meta: { requiresAuth: true } },

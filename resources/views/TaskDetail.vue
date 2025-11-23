@@ -123,14 +123,21 @@
                     <div v-else-if="comments.length" class="space-y-4">
                         <div v-for="comment in comments" :key="comment.id" :class="['flex gap-3', getUserSide(comment.user.id) === 'right' ? 'flex-row-reverse' : '']">
                             <div class="flex-shrink-0">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm bg-blue-600">
+                                <div
+                                    @click="goToProfile(comment.user.id)"
+                                    class="w-10 h-10 cursor-pointer hover:opacity-80 rounded-full flex items-center justify-center text-white font-semibold text-sm bg-blue-600"
+                                >
                                     {{ getInitials(comment.user.name, comment.user.surname) }}
                                 </div>
                             </div>
                             <div :class="['max-w-[70%]', getUserSide(comment.user.id) === 'right' ? 'items-end' : 'items-start']">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <p class="text-sm font-semibold text-gray-900">{{ comment.user.name }} {{ comment.user.surname }}</p>
-                                    <p class="text-xs text-gray-500">{{ formatDateDifference(comment.created_at) }}</p>
+                                    <p
+                                        @click="goToProfile(comment.user.id)"
+                                        class="text-sm font-semibold text-gray-900 cursor-pointer hover:underline"
+                                    >
+                                        {{ comment.user.name }} {{ comment.user.surname }}
+                                    </p>                                    <p class="text-xs text-gray-500">{{ formatDateDifference(comment.created_at) }}</p>
                                 </div>
                                 <div :class="['rounded-2xl px-4 py-3 break-words', getUserSide(comment.user.id) === 'right' ? 'bg-blue-600 text-white rounded-br-md' : 'bg-gray-100 text-gray-900 rounded-bl-md']">
                                     <p class="text-sm whitespace-pre-wrap">{{ comment.text }}</p>
@@ -186,7 +193,13 @@
                                 </div>
 
                                 <p class="text-sm text-gray-700 leading-relaxed">
-                                    Používateľ <strong class="font-semibold text-gray-900">{{ log.user.name }} {{ log.user.surname }}</strong>
+                                    Používateľ
+                                    <span
+                                        @click="goToProfile(log.user.id)"
+                                        class="font-semibold text-gray-900 cursor-pointer hover:underline"
+                                    >
+                                    {{ log.user.name }} {{ log.user.surname }}
+                                    </span>
 
                                     <span v-if="log.type === 'status_change'">
                         zmenil stav z "{{ log.old_value }}" na "{{ log.new_value }}"
@@ -315,6 +328,9 @@ export default {
             } finally {
                 this.loadingComments = false;
             }
+        },
+        goToProfile(userId) {
+            this.$router.push(`/profile/${userId}`);
         },
         async fetchTimes() {
             this.loadingTimes = true;

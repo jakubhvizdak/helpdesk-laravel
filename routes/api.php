@@ -81,6 +81,7 @@ Route::middleware('jwt')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'show']);
     Route::put('/profile', [ProfileController::class, 'update']);
+    Route::get('/profile/{id}', [ProfileController::class, 'getUserInfo']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

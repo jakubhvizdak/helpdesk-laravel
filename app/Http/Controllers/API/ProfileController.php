@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -21,6 +22,21 @@ class ProfileController extends Controller
             'last_login_at' => $user->last_login_at?->format('Y-m-d H:i:s'),
             'role' => $user->role,
         ]);
+    }
+
+    public function getUserInfo($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        $user->makeHidden(['password', 'remember_token']);
+
+        return response()->json($user);
     }
 
     public function update(Request $request)
