@@ -31,9 +31,13 @@ class TaskEdited extends Notification
 
     public function toDatabase($notifiable)
     {
+        $actionText = $this->log->type === TaskEditLog::TYPE_TASK_CREATED
+            ? 'vytvoril úlohu'
+            : 'upravil úlohu';
+
         return [
             'title' => "{$this->task->id} - {$this->task->title}",
-            'message' => "{$this->user->name} {$this->user->surname} upravil úlohu {$this->task->title}",
+            'message' => "{$this->user->name} {$this->user->surname} {$actionText} {$this->task->title}",
             'link' => "/task/{$this->task->id}"
         ];
     }

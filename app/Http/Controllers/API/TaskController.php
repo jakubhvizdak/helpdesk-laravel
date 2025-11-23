@@ -127,6 +127,17 @@ class TaskController extends Controller
             'created_by' => auth()->id(),
         ]);
 
+        TaskEditLog::create([
+            'task_id'   => $task->id,
+            'user_id'   => auth()->id(),
+            'type'      => TaskEditLog::TYPE_TASK_CREATED,
+            'old_value' => null,
+            'new_value' => json_encode([
+                'title'       => $task->title,
+            ]),
+            'notified' => 0,
+        ]);
+
         $task->load(['assigned', 'project', 'status']);
 
         return response()->json($task, 201);

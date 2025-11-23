@@ -24,6 +24,7 @@ class TaskEditLog extends Model
     public const TYPE_COMMENT_ADDED   = 'comment_added';
     public const TYPE_ASSIGNED_USER   = 'assigned_user';
     public const TYPE_DUE_DATE        = 'due_date';
+    public const TYPE_TASK_CREATED        = 'task_created';
 
     public static function getTypes(): array
     {
@@ -32,6 +33,7 @@ class TaskEditLog extends Model
             self::TYPE_COMMENT_ADDED,
             self::TYPE_ASSIGNED_USER,
             self::TYPE_DUE_DATE,
+            self::TYPE_TASK_CREATED,
         ];
     }
 

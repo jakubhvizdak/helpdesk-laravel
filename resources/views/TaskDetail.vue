@@ -197,6 +197,9 @@
                                     <span v-else-if="log.type === 'due_date'">
                         zmenil termín z "{{ log.old_value }}" na "{{ log.new_value }}"
                     </span>
+                                    <span v-if="log.type === 'task_created'">
+                        vytvoril úlohu.
+                    </span>
                                     <span v-else>
                         zmenil {{ log.type }} z "{{ log.old_value }}" na "{{ log.new_value }}"
                     </span>
