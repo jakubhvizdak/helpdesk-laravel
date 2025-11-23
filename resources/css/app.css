@@ -168,12 +168,6 @@ input::placeholder { color: #a0aec0; }
     .responsive-table td > * { flex: 1; text-align: right; }
 }
 
-@media (max-width: 640px) {
-    div {
-        min-width: calc(100vw - 2rem);
-        max-width: calc(100vw - 2rem);
-    }
-
 .prose {
     color: #374151;
 }
@@ -262,5 +256,11 @@ input::placeholder { color: #a0aec0; }
 
     .prose em {
         font-style: italic;
+    }
+
+@media (max-width: 640px) {
+    div {
+        min-width: calc(100vw - 2rem);
+        max-width: calc(100vw - 2rem);
     }
 }
