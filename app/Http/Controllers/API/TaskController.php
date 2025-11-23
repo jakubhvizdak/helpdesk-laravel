@@ -55,6 +55,12 @@ class TaskController extends Controller
     {
         $task = Task::with(['assigned', 'project', 'status'])->find($id);
 
+        $user = auth()->user();
+
+        if (!$task->project->users->contains($user->id)) {
+            abort(403, 'Nemáš prístup k tejto úlohe.');
+        }
+
         if (!$task) {
             return response()->json(['message' => 'Task not found'], 404);
         }
