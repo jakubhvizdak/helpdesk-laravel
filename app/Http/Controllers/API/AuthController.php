@@ -24,7 +24,8 @@ class AuthController extends Controller
         }
 
         $user = auth('api')->user();
-        $user->update(['last_login_at' => now()]);
+        $user->last_login_at = now();
+        $user->saveQuietly();
 
         return response()->json([
             'token' => $token,
