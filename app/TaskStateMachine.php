@@ -6,6 +6,7 @@ use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\TaskStatusTransition;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class TaskStateMachine
 {
@@ -30,10 +31,12 @@ class TaskStateMachine
 
     private function loadTransitions(): void
     {
-        $this->transitionMap = TaskStatusTransition::all()
-            ->groupBy('from_status_id')
-            ->map(fn($items) => $items->pluck('to_status_id')->toArray())
-            ->toArray();
+        $this->transitionMap = Cache::remember('task_transitions', 3600, function () {
+            return TaskStatusTransition::all()
+                ->groupBy('from_status_id')
+                ->map(fn($items) => $items->pluck('to_status_id')->toArray())
+                ->toArray();
+        });
     }
 
     public function getAllowedTransitions(int $statusId)
