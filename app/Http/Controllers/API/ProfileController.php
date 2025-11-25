@@ -11,16 +11,11 @@ class ProfileController extends Controller
 {
     public function show(Request $request)
     {
-        $user = $request->user();
-
+        $user = $request->user()->makeHidden(['password', 'remember_token']);
         return response()->json([
-            'id' => $user->id,
-            'name' => $user->name,
-            'surname' => $user->surname,
-            'email' => $user->email,
+            ...$user->toArray(),
             'created_at' => $user->created_at?->format('Y-m-d H:i:s'),
             'last_login_at' => $user->last_login_at?->format('Y-m-d H:i:s'),
-            'role' => $user->role,
         ]);
     }
 
