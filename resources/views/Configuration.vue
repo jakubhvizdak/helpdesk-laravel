@@ -125,8 +125,6 @@
             <NotificationContainer ref="notifier" />
         </div>
     </div>
-    ```
-
 </template>
 
 <script>
