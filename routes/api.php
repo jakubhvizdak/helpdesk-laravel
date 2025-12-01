@@ -15,6 +15,7 @@ use App\Http\Controllers\API\TaskEditLogController;
 use App\Http\Controllers\API\TaskStatusTransitionController;
 use App\Http\Controllers\API\NotificationController;
 use App\Http\Controllers\API\ProjectDocumentationController;
+use App\Http\Controllers\API\DashboardController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/version', function () {
@@ -29,6 +30,7 @@ Route::middleware('jwt')->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy']);
     Route::get('/me', [UserController::class, 'me']);
     Route::put('/users/{user}/projects', [UserController::class, 'assignProjectsToUser']);
+    Route::get('/dashboard', [DashboardController::class, 'dashboard']);
 
     Route::get('/projects', [ProjectController::class, 'index']);
     Route::get('/my-projects', [ProjectController::class, 'myProjects']);
@@ -45,14 +47,9 @@ Route::middleware('jwt')->group(function () {
     Route::delete('/project/{project}/documentation/{section}', [ProjectDocumentationController::class, 'destroy']);
 
     Route::get('/tasks', [TaskController::class, 'index']);
-    Route::get('/tasks/my-requests', [TaskController::class, 'myRequests']);
-    Route::get('/tasks/in-progress', [TaskController::class, 'inProgress']);
-    Route::get('/tasks/completed', [TaskController::class, 'completed']);
     Route::get('/tasks/{id}', [TaskController::class, 'show']);
     Route::post('/tasks', [TaskController::class, 'store']);
     Route::get('/tasks/{task}/edit-log', [TaskEditLogController::class, 'index']);
-    Route::get('/my-tasks', [TaskController::class, 'myActiveTasks']);
-    Route::get('/my-tasks/completed', [TaskController::class, 'myCompletedTasks']);
     Route::patch('/tasks/{task}/status', [TaskStatusController::class, 'updateStatus']);
     Route::get('/task-statuses', [TaskStatusController::class, 'index']);
     Route::get('/tasks/{task}/allowed-transitions', [TaskStatusController::class, 'allowedTransitions']);
@@ -75,7 +72,6 @@ Route::middleware('jwt')->group(function () {
     Route::get('/tasks/{task}/times', [TaskTimeController::class, 'index']);
     Route::post('/tasks/{task}/times', [TaskTimeController::class, 'store']);
     Route::get('/time-tracking', [TaskTimeController::class, 'getAll']);
-    Route::get('/time-tracking/summary', [TaskTimeController::class, 'getSummary']);
 
     Route::get('/task-activities', [TaskActivityController::class, 'index']);
 

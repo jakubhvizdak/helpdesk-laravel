@@ -83,27 +83,4 @@ class TaskTimeController extends Controller
 
         return response()->json($time, 201);
     }
-
-    public function getSummary(Request $request)
-    {
-        $userId = $request->user()->id;
-
-        $times = TaskTime::whereHas('task.project.users', function($q) use ($userId) {
-            $q->where('users.id', $userId);
-        })->get();
-
-        $today = Carbon::today();
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $totalHours = $times->sum('hours');
-
-        $hours = [
-            'today' => $times->where('worked_at', '>=', $today)->sum('hours'),
-            'week' => $times->where('worked_at', '>=', $startOfWeek)->sum('hours'),
-            'month' => $times->where('worked_at', '>=', $startOfMonth)->sum('hours'),
-            'total_hours' => $totalHours,
-        ];
-
-        return response()->json($hours);
-    }
 }

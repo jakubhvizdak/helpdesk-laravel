@@ -68,7 +68,7 @@ import SectionCard from "../components/dashboard/SectionCard.vue";
 import TaskItem from "../components/dashboard/TaskItem.vue";
 import TimeTracker from "../components/dashboard/TimeTracker.vue";
 import RequestItem from "../components/dashboard/RequestItem.vue";
-import ResponseItem from "../components/dashboard/ResponseItem.vue";
+
 import { getGreeting, getTodayDate } from '../js/composables/date';
 
 const user = ref(JSON.parse(localStorage.getItem("user")) || {});
@@ -76,91 +76,41 @@ const role = ref(user.value.role ? user.value.role.toLowerCase() : "user");
 
 const loading = ref(false);
 const error = ref("");
+
 const stats = ref([]);
+const requests = ref([]);
 const userTasks = ref([]);
 const timeData = ref({});
-const requests = ref([]);
-const responses = ref([]);
-
-const safeRequest = async (fn) => {
-    try {
-        const res = await fn();
-        return res.data;
-    } catch (e) {
-        console.warn("Request failed:", e.message);
-        return [];
-    }
-};
 
 const fetchDashboard = async () => {
     loading.value = true;
     error.value = "";
 
     try {
+        const res = await axios.get("/dashboard");
+        const data = res.data;
+
         if (role.value === "customer") {
-
-            const [allTasks, inProgress, completed] = await Promise.all([
-                safeRequest(() => axios.get("/tasks/my-requests")),
-                safeRequest(() => axios.get("/tasks/in-progress")),
-                safeRequest(() => axios.get("/tasks/completed"))
-            ]);
-
-            const filterPrivate = (tasks) => Array.isArray(tasks) ? tasks.filter(t => t.private !== 1) : [];
-
-            requests.value = filterPrivate(allTasks);
-            const inProgressList = filterPrivate(inProgress);
-            const completedList = filterPrivate(completed);
-
-            responses.value = [];
-
-            let avgTime = "N/A";
-
-            const finished = completedList.filter(t => {
-                if (!t.end_date) return false;
-
-                const end = new Date(t.end_date);
-                return !isNaN(end.getTime());
-            });
-
-            if (finished.length > 0) {
-                const totalMs = finished.reduce((sum, t) => {
-                    const created = new Date(t.created_at);
-                    const end = new Date(t.end_date);
-                    return sum + (end - created);
-                }, 0);
-
-                const avgMs = totalMs / finished.length;
-                const hours = Math.floor(avgMs / 1000 / 60 / 60);
-                const minutes = Math.floor((avgMs / 1000 / 60) % 60);
-                avgTime = `${hours}h ${minutes}m`;
-            }
-
             stats.value = [
-                { title: "Vytvorené požiadavky", value: requests.value.length, icon: "MessageSquare", color: "blue" },
-                { title: "V riešení", value: inProgressList.length, icon: "Clock", color: "orange" },
-                { title: "Dokončené", value: completedList.length, icon: "CheckCircle", color: "green" },
-                { title: "Priemerný čas dokončenia", value: avgTime, icon: "Timer", color: "purple" }
+                { title: "Vytvorené požiadavky", value: data.stats.total, icon: "MessageSquare", color: "blue" },
+                { title: "V riešení", value: data.stats.inProgress, icon: "Clock", color: "orange" },
+                { title: "Dokončené", value: data.stats.completed, icon: "CheckCircle", color: "green" },
+                { title: "Priemerný čas dokončenia", value: data.stats.avgTime, icon: "Timer", color: "purple" }
             ];
-    } else {
-            const [tasks, projects, timeSummary, completedTasks] = await Promise.all([
-                safeRequest(() => axios.get("/my-tasks")),
-                safeRequest(() => axios.get("/my-projects")),
-                safeRequest(() => axios.get("/time-tracking/summary")),
-                safeRequest(() => axios.get("/tasks/completed"))
-            ]);
 
-            userTasks.value = Array.isArray(tasks) ? tasks.filter(t => !(role.value === 'customer' && t.private === 1)) : [];
-            const completedList = Array.isArray(completedTasks) ? completedTasks : [];
-            const totalHours = timeSummary?.total_hours || 0;
-            timeData.value = timeSummary || {};
-
+            requests.value = data.requests || [];
+        } else {
             stats.value = [
-                { title: "Otvorené úlohy", value: userTasks.value.length, icon: "ClipboardList", color: "blue" },
-                { title: "Dokončené úlohy", value: completedList.length, icon: "CheckCircle", color: "green" },
-                { title: "Odpracované hodiny", value: totalHours + "h", icon: "Clock", color: "purple" },
-                { title: "Projekty", value: Array.isArray(projects) ? projects.length : 0, icon: "Folder", color: "orange" }
+                { title: "Otvorené úlohy", value: data.stats.openTasks, icon: "ClipboardList", color: "blue" },
+                { title: "Dokončené úlohy", value: data.stats.completed, icon: "CheckCircle", color: "green" },
+                { title: "Projekty", value: data.stats.projects, icon: "Folder", color: "orange" },
+                { title: "Odpracované hodiny", value: data.stats.totalHours + "h", icon: "Clock", color: "purple" }
             ];
+
+            userTasks.value = data.tasks || [];
+            timeData.value = data.timeData || { total_hours: 0 };
         }
+
     } catch (e) {
         error.value = e.message || "Nepodarilo sa načítať dashboard.";
     } finally {
