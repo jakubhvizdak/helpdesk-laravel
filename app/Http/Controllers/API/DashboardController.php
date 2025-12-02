@@ -24,6 +24,14 @@ class DashboardController extends Controller
 
     private function dashboardCustomer(User $user)
     {
+        $projectIds = $user->projects()->pluck('projects.id')->toArray();
+
+        $allTasks = Task::whereIn('project_id', $projectIds)
+            ->where('private', 0)
+            ->with('status')
+            ->select('id', 'title', 'status_id', 'created_at', 'end_date', 'private', 'project_id')
+            ->get();
+
         $tasks = Task::where('created_by', $user->id)
             ->with('status')
             ->select('id', 'title', 'status_id', 'created_at', 'end_date', 'private')
@@ -43,6 +51,7 @@ class DashboardController extends Controller
         return response()->json([
             'role'       => 'customer',
             'requests'   => $publicTasks->values(),
+            'allTasks'   => $allTasks->values(),
             'stats' => [
                 'total'     => $publicTasks->count(),
                 'inProgress'=> $inProgress->count(),
