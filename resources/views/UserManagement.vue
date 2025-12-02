@@ -115,9 +115,9 @@
                                     v-model="user.role"
                                     class="border border-gray-300 rounded-lg px-2 sm:px-3 py-2 w-full min-w-[100px] focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                                 >
-                                    <option value="user">User</option>
+                                    <option value="user">Používateľ</option>
                                     <option value="admin">Admin</option>
-                                    <option value="customer">Customer</option>
+                                    <option value="customer">Zákazník</option>
                                 </select>
                             </td>
                             <td class="px-3 sm:px-6 py-4 whitespace-nowrap">
